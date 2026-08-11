@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal de Agendamento de Entregas — Conceito e Wireframe</title>
+<style>
+:root{
+  --bg:#f6f1ee;
+  --surface:#fffdfb;
+  --surface-2:#fbf6f3;
+  --ink:#32221d;
+  --muted:#7b655c;
+  --line:#eaded7;
+  --blue:#7a241c;
+  --blue-2:#f3e7e2;
+  --blue-3:#e9d2ca;
+  --green:#8c5b2d;
+  --green-bg:#f8efe7;
+  --amber:#a65c2d;
+  --amber-bg:#faefe8;
+  --red:#7a2a1f;
+  --red-bg:#f8e8e4;
+  --shadow:0 20px 60px rgba(107,59,42,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+body{overflow:hidden}
+button,input,select,textarea{font:inherit}
+.app{height:100vh;display:grid;grid-template-rows:62px 1fr}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:rgba(255,255,255,.94);
+  border-bottom:1px solid var(--line);backdrop-filter:blur(12px);z-index:5
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.02em}
+.brandmark{width:32px;height:32px;border-radius:10px;background:var(--blue);color:#fff;display:grid;place-items:center}
+.brandmark svg{width:18px}
+.top-actions{display:flex;gap:8px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 12px;font-weight:800;cursor:pointer;color:var(--ink)}
+.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.deck{position:relative;display:grid;place-items:center;padding:22px 34px 34px}
+.stage{
+  position:relative;width:min(1560px,calc(100vw - 68px));aspect-ratio:16/9;max-height:calc(100vh - 112px)
+}
+.slide{
+  position:absolute;inset:0;background:#fff;border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);
+  padding:54px 60px 46px;overflow:hidden;opacity:0;transform:translateX(28px) scale(.995);pointer-events:none;transition:.32s ease
+}
+.slide.active{opacity:1;transform:none;pointer-events:auto}
+.slide::after{
+  content:"";position:absolute;right:-120px;top:-150px;width:360px;height:360px;border-radius:50%;
+  background:radial-gradient(circle,rgba(140,47,34,.07),rgba(140,47,34,0) 70%);pointer-events:none
+}
+.kicker{
+  display:inline-flex;align-items:center;gap:8px;background:var(--blue-2);color:var(--blue);
+  padding:8px 12px;border-radius:999px;font-size:13px;font-weight:900;margin-bottom:18px
+}
+h1,h2,h3,p{margin:0}
+h1{font-size:clamp(44px,4vw,72px);line-height:1.02;letter-spacing:-.05em;max-width:780px}
+h2{font-size:clamp(34px,3vw,52px);line-height:1.05;letter-spacing:-.04em}
+h3{font-size:18px;letter-spacing:-.02em}
+.lead{font-size:clamp(18px,1.4vw,25px);line-height:1.42;color:#8c2f22;font-weight:800;max-width:760px;margin-top:20px}
+.bodycopy{font-size:16px;line-height:1.58;color:var(--muted);max-width:700px;margin-top:20px}
+.footnote{
+  position:absolute;left:60px;right:60px;bottom:20px;padding-top:12px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:12px;color:#8f7a70;font-size:12px
+}
+.corner-count{position:absolute;right:18px;bottom:14px;color:#ad9b93;font-size:10px;font-weight:900}
+.badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900;white-space:nowrap}
+.badge.blue{background:var(--blue-2);color:var(--blue)}
+.badge.green{background:var(--green-bg);color:var(--green)}
+.badge.amber{background:var(--amber-bg);color:var(--amber)}
+.badge.gray{background:#f0e7e2;color:#7e6a61}
+.badge.red{background:var(--red-bg);color:var(--red)}
+.note{
+  border:1px solid #ead7d0;background:#fbf4f1;border-radius:14px;padding:13px 15px;color:#765d54;font-size:12px;line-height:1.45
+}
+
+/* slide 1 */
+.hero-grid{display:grid;grid-template-columns:1.05fr 1.1fr;gap:48px;height:100%;align-items:center;padding-bottom:28px}
+.flow-card{border:1px solid var(--line);background:var(--surface-2);border-radius:24px;padding:24px}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.flow-step{text-align:center;position:relative;padding:10px 4px}
+.flow-step:not(:last-child)::after{content:"→";position:absolute;right:-8px;top:35px;font-size:25px;color:var(--blue);font-weight:900}
+.icon{
+  width:56px;height:56px;border-radius:18px;background:var(--blue-2);color:var(--blue);display:grid;place-items:center;margin:0 auto 12px
+}
+.icon svg{width:26px;height:26px}
+.flow-step b{display:block;font-size:13px}
+.flow-step small{display:block;color:var(--muted);font-size:10.5px;line-height:1.35;margin-top:6px}
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.value{border:1px solid var(--line);background:#fff;border-radius:15px;padding:13px}
+.value b{font-size:12px;display:block}
+.value span{font-size:10.5px;line-height:1.4;color:var(--muted);display:block;margin-top:4px}
+
+/* conceptual model */
+.model-grid{display:grid;grid-template-columns:1fr 80px 1fr 80px 1fr;align-items:center;margin-top:34px}
+.model-box{border:1px solid var(--line);border-radius:22px;padding:22px;background:#fff;min-height:250px}
+.model-box.primary{border-color:#d9bdb4;background:#fcf7f4}
+.model-icon{width:54px;height:54px;border-radius:16px;background:var(--blue-2);color:var(--blue);display:grid;place-items:center;margin-bottom:16px}
+.model-icon svg{width:26px}
+.model-box p{color:var(--muted);font-size:12px;line-height:1.5;margin-top:9px}
+.model-list{margin-top:16px;display:grid;gap:8px}
+.model-item{display:flex;justify-content:space-between;gap:10px;padding:9px 10px;background:#fdf9f7;border:1px solid #f0e7e2;border-radius:10px;font-size:11px}
+.model-arrow{font-size:30px;text-align:center;color:#b49f96}
+.rule-strip{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.rule-strip div{padding:12px 14px;border-radius:13px;border:1px solid var(--line);font-size:11px;color:var(--muted)}
+.rule-strip b{color:var(--ink);display:block;margin-bottom:3px}
+
+/* browser wireframe */
+.title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:18px}
+.title-row p{color:var(--muted);font-size:14px;line-height:1.45;margin-top:7px}
+.browser{height:71%;border:1px solid #e6d8d2;border-radius:20px;background:#fbf7f5;overflow:hidden;box-shadow:0 14px 36px rgba(107,59,42,.08)}
+.browser-top{height:42px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;padding:0 13px}
+.dot3{width:8px;height:8px;border-radius:50%;background:#e0d3cd}
+.url{height:25px;flex:1;border:1px solid var(--line);border-radius:8px;background:#fbf7f5;margin-left:8px;padding:0 10px;display:flex;align-items:center;color:#a9958c;font-size:10px}
+.portal{height:calc(100% - 42px);display:grid;grid-template-columns:180px 1fr}
+.sidebar{background:#fff;border-right:1px solid var(--line);padding:16px 12px}
+.side-brand{font-weight:900;padding:2px 9px 18px}
+.nav{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;color:#7e6a61;font-size:11px;margin-bottom:4px}
+.nav.active{background:var(--blue-2);color:var(--blue);font-weight:900}
+.nav svg{width:14px;height:14px}
+.content{padding:20px 24px;overflow:auto}
+.content-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.content-head h3{font-size:21px}
+.content-head p{font-size:11px;color:var(--muted);margin-top:4px}
+.search-row{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:14px}
+.input{height:38px;border:1px solid #e6d8d2;background:#fff;border-radius:10px;padding:0 11px;font-size:11px;color:#6e5c54;display:flex;align-items:center;justify-content:space-between}
+.search-btn{border:0;border-radius:10px;background:var(--blue);color:#fff;padding:0 17px;font-weight:900;font-size:11px}
+.table-card{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.table{width:100%;border-collapse:collapse;font-size:11px}
+.table th{text-align:left;padding:10px 12px;background:#fdf9f7;border-bottom:1px solid var(--line);font-size:9px;color:#8c786f;text-transform:uppercase;letter-spacing:.06em}
+.table td{padding:11px 12px;border-bottom:1px solid #f0e7e2}
+.table tr:last-child td{border-bottom:0}
+.table tr.selected{background:#fbf3ef;box-shadow:inset 3px 0 var(--blue)}
+.action{color:var(--blue);font-weight:900;white-space:nowrap}
+
+/* order detail */
+.order-top{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px}
+.kv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:11px}
+.kv{padding:10px;background:#fdf9f7;border:1px solid #f0e7e2;border-radius:10px}
+.kv span{display:block;font-size:9px;color:#8e786f;text-transform:uppercase;letter-spacing:.05em}
+.kv b{font-size:11.5px;display:block;margin-top:4px}
+.progress-wrap{margin-top:13px}
+.progress-label{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:6px}
+.progress{height:9px;background:#eee3de;border-radius:999px;overflow:hidden}
+.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),#b45a46);width:40%}
+.summary3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:11px}
+.summary3 div{padding:9px;border-radius:10px;text-align:center;background:#fbf7f5;border:1px solid #edf1f5}
+.summary3 span{display:block;color:var(--muted);font-size:9px}
+.summary3 b{font-size:14px;display:block;margin-top:3px}
+.history{margin-top:13px}
+.history-line{display:grid;grid-template-columns:110px 1fr 95px;gap:8px;padding:9px 0;border-bottom:1px solid #f0e7e2;font-size:10px}
+.history-line:last-child{border-bottom:0}
+
+/* schedule form */
+.schedule-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:#8c786f;font-weight:900;margin-bottom:5px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.unit-row{display:grid;grid-template-columns:1fr 130px;gap:8px}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:7px 0 11px}
+.slot{border:1px solid #e6d8d2;background:#fff;border-radius:9px;padding:9px;text-align:center;font-size:10px;font-weight:900}
+.slot.selected{border-color:var(--blue);background:var(--blue-2);color:var(--blue)}
+.slot.disabled{background:#f2f4f7;color:#ad9b93;text-decoration:line-through}
+.primary-action{height:40px;width:100%;border:0;border-radius:10px;background:var(--blue);color:#fff;font-weight:900;font-size:11px}
+.helper{font-size:10px;color:var(--muted);line-height:1.45;margin-top:8px}
+
+/* tracking */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.metric{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px}
+.metric span{font-size:9px;color:var(--muted)}
+.metric b{display:block;font-size:20px;margin-top:4px}
+.track-layout{display:grid;grid-template-columns:1.3fr .7fr;gap:12px}
+.status-card h3{font-size:15px}
+.status-bar{display:flex;gap:5px;margin:11px 0}
+.status-bar span{height:7px;flex:1;border-radius:999px;background:#eee3de}
+.status-bar .done{background:var(--green)}
+.status-bar .current{background:var(--blue)}
+.event{padding:9px 0;border-bottom:1px solid #f0e7e2;font-size:10px}
+.event:last-child{border-bottom:0}
+.event b{display:block}
+.event span{color:var(--muted)}
+.email-preview{margin-top:10px;border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.email-preview .head{background:#fbf7f5;border-bottom:1px solid var(--line);padding:9px 10px;font-size:9px;color:var(--muted)}
+.email-preview .body{padding:10px;font-size:10px;line-height:1.45}
+
+/* receiving */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.compare-box{padding:12px;border-radius:12px;border:1px solid var(--line);background:#fdf9f7}
+.compare-box span{font-size:9px;color:var(--muted);display:block}
+.compare-box b{font-size:18px;display:block;margin-top:4px}
+.delta{margin-top:8px;padding:10px;border-radius:10px;background:var(--amber-bg);color:#9b681a;font-size:10px}
+.status-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.status-actions div{border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center;font-size:10px;background:#fff}
+.status-actions .active{border-color:#f1c674;background:var(--amber-bg);color:#9b681a;font-weight:900}
+
+/* final architecture */
+.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:22px}
+.stack{display:grid;gap:9px}
+.stack-box{border:1px solid var(--line);border-radius:14px;padding:13px 15px;background:#fff;display:flex;justify-content:space-between;align-items:center}
+.stack-box.primary{border-color:#d9bdb4;background:#fcf7f4}
+.stack-box span{font-size:10px;color:var(--muted)}
+.arrow-down{text-align:center;color:#b49f96;font-size:18px}
+.rules{display:grid;gap:9px}
+.rule{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:13px;padding:11px}
+.rule .num{width:26px;height:26px;border-radius:8px;background:var(--blue-2);color:var(--blue);display:grid;place-items:center;font-size:10px;font-weight:900;flex:0 0 auto}
+.rule p{font-size:10px;color:var(--muted);line-height:1.4;margin-top:3px}
+
+/* nav */
+.nav-dots{position:absolute;left:50%;bottom:-38px;transform:translateX(-50%);display:flex;gap:7px}
+.nav-dot{height:7px;width:7px;border-radius:99px;background:#d8c9c2;cursor:pointer;transition:.2s}
+.nav-dot.active{width:26px;background:var(--blue)}
+.floating-nav{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:7px;z-index:10}
+.circle-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;box-shadow:0 10px 26px rgba(107,59,42,.10);display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.circle-btn svg{width:17px}
+
+
+/* administration */
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}
+.admin-stat{border:1px solid var(--line);background:#fff;border-radius:13px;padding:11px 12px}
+.admin-stat span{display:block;font-size:9px;color:var(--muted)}
+.admin-stat b{display:block;font-size:20px;margin-top:4px}
+.filterbar{display:flex;gap:8px;align-items:center;margin-bottom:11px;flex-wrap:wrap}
+.filter-chip{height:32px;padding:0 10px;border:1px solid var(--line);background:#fff;border-radius:9px;display:flex;align-items:center;gap:7px;font-size:10px;color:#6f5c54}
+.filter-chip.active{border-color:#c9aaa0;background:#f8efec;color:var(--blue);font-weight:900}
+.admin-table-wrap{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.admin-table{width:100%;border-collapse:collapse;font-size:9.7px}
+.admin-table th{background:#f8f3f0;color:#7f6a61;text-align:left;padding:9px 9px;border-bottom:1px solid var(--line);text-transform:uppercase;font-size:8px;letter-spacing:.055em;white-space:nowrap}
+.admin-table td{padding:9px;border-bottom:1px solid #f0e7e2;vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:0}
+.admin-table tr.attention{background:#fcf5f1}
+.admin-table tr.today{box-shadow:inset 3px 0 var(--blue)}
+.row-actions{display:flex;gap:5px}
+.tiny-action{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 7px;font-size:8.5px;font-weight:800;color:#65544d}
+.tiny-action.main{border-color:#c9aaa0;color:var(--blue);background:#fbf4f1}
+.alert-panel{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.alert-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px 12px;display:flex;gap:9px;align-items:flex-start}
+.alert-mark{width:28px;height:28px;border-radius:9px;background:var(--blue-2);color:var(--blue);display:grid;place-items:center;font-weight:900;font-size:11px;flex:0 0 auto}
+.alert-card b{font-size:10px;display:block}
+.alert-card p{font-size:9px;color:var(--muted);line-height:1.4;margin-top:3px}
+
+/* reception spreadsheet */
+.sheet-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.sheet-title{display:flex;align-items:center;gap:9px}
+.sheet-title strong{font-size:14px}
+.sheet-title span{font-size:9px;color:var(--muted)}
+.sheet-actions{display:flex;gap:6px}
+.sheet-btn{height:29px;padding:0 9px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:9px;font-weight:800;color:#69574f}
+.sheet-wrap{border:1px solid #dbcac3;border-radius:12px;background:#fff;overflow:auto}
+.sheet{width:100%;border-collapse:separate;border-spacing:0;font-size:9.2px;min-width:1030px}
+.sheet th{
+  position:sticky;top:0;z-index:2;background:#6b3b2a;color:#fff;padding:8px 7px;text-align:left;
+  font-size:8px;text-transform:uppercase;letter-spacing:.045em;border-right:1px solid rgba(255,255,255,.14);white-space:nowrap
+}
+.sheet td{padding:8px 7px;border-right:1px solid #eaded7;border-bottom:1px solid #eaded7;white-space:nowrap;background:#fff}
+.sheet tbody tr:nth-child(even) td{background:#fcf8f6}
+.sheet tbody tr.focus td{background:#f7ece8}
+.sheet tbody tr.focus td:first-child{box-shadow:inset 4px 0 #7a241c}
+.sheet .checkbox{width:14px;height:14px;border:1px solid #c8b6ae;border-radius:4px;display:grid;place-items:center;color:#fff;background:#fff}
+.sheet .checkbox.checked{background:#7a241c;border-color:#7a241c}
+.sheet .cell-input{display:inline-flex;min-width:70px;padding:5px 6px;border:1px solid #dac9c1;border-radius:6px;background:#fff;color:#5d4d46}
+.sheet .cell-input.empty{color:#aa9a93}
+.sheet-note{margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sheet-note div{border:1px solid var(--line);background:#fff;border-radius:11px;padding:9px 10px;font-size:9px;color:var(--muted)}
+.sheet-note b{display:block;color:var(--ink);font-size:9.5px;margin-bottom:2px}
+
+@media(max-width:1100px){
+ body{overflow:auto}.app{height:auto;min-height:100vh}.deck{padding:16px}.stage{width:100%;max-height:none;aspect-ratio:auto}
+ .slide{position:relative;display:none;min-height:760px;padding:34px 26px 54px}.slide.active{display:block}
+ .hero-grid,.order-top,.schedule-layout,.track-layout,.arch-grid{grid-template-columns:1fr}
+ .model-grid{grid-template-columns:1fr}.model-arrow{transform:rotate(90deg)}
+ .flow,.values,.metrics,.rule-strip{grid-template-columns:1fr 1fr}
+ .portal{grid-template-columns:145px 1fr}.footnote{left:26px;right:26px}.floating-nav{position:fixed}
+}
+@media print{
+ body{overflow:visible;background:#fff}.topbar,.floating-nav,.nav-dots{display:none!important}.deck{padding:0;display:block}
+ .stage{width:100%;max-height:none;aspect-ratio:auto}.slide{position:relative;opacity:1!important;transform:none!important;pointer-events:auto;page-break-after:always;border:0;box-shadow:none;border-radius:0;width:100vw;height:56.25vw}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brandmark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg>
+      </div>
+      <span>LIPSON · Portal de Agendamento · Conceito + Wireframe</span>
+    </div>
+    <div class="top-actions">
+      <button class="btn" onclick="goTo(0)">Início</button>
+      <button class="btn primary" onclick="window.print()">Imprimir / PDF</button>
+    </div>
+  </header>
+
+  <main class="deck">
+    <div class="stage">
+
+      <!-- SLIDE 1 -->
+      <section class="slide active">
+        <div class="hero-grid">
+          <div>
+            <div class="kicker">Visão geral</div>
+            <h1>O fornecedor agenda uma entrega a partir de um pedido que já existe.</h1>
+            <p class="lead">Ele busca o pedido, informa quanto será entregue naquela data, escolhe um horário disponível e acompanha o saldo até a conclusão total.</p>
+            <p class="bodycopy">A diferença principal é esta: <b>pedido</b> e <b>entrega</b> não são a mesma coisa. Um pedido pode gerar várias entregas em datas diferentes, sem desaparecer do sistema enquanto ainda houver saldo.</p>
+          </div>
+          <div>
+            <div class="flow-card">
+              <div class="flow">
+                <div class="flow-step">
+                  <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v14H4z"/><path d="M8 3h8v6H8z"/></svg></div>
+                  <b>Pedido já existe</b><small>Fornecedor não digita cliente, material ou fornecedor.</small>
+                </div>
+                <div class="flow-step">
+                  <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></div>
+                  <b>Busca o pedido</b><small>Pesquisa pelo número e abre o saldo disponível.</small>
+                </div>
+                <div class="flow-step">
+                  <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg></div>
+                  <b>Agenda uma parte</b><small>Data, horário e quantidade desta entrega.</small>
+                </div>
+                <div class="flow-step">
+                  <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 6 9 7 9-7"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg></div>
+                  <b>Recebe confirmação</b><small>E-mail automático após o agendamento.</small>
+                </div>
+                <div class="flow-step">
+                  <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg></div>
+                  <b>Acompanha o saldo</b><small>O pedido continua aberto enquanto houver quantidade pendente.</small>
+                </div>
+              </div>
+            </div>
+            <div class="values">
+              <div class="value"><b>Sem redigitação</b><span>Cliente, fornecedor e material vêm do pedido.</span></div>
+              <div class="value"><b>Entrega fracionada</b><span>Um pedido pode ter vários agendamentos.</span></div>
+              <div class="value"><b>Saldo visível</b><span>O sistema mostra o que já foi entregue e o que falta.</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="footnote"><span>Ideia central: Pedido → várias entregas → saldo → conclusão</span><span>Conceito</span></div>
+        <span class="corner-count">01 / 10</span>
+      </section>
+
+      <!-- SLIDE 2 -->
+      <section class="slide">
+        <div class="kicker">Modelo de funcionamento</div>
+        <h2>Pedido, agendamento e recebimento são registros diferentes.</h2>
+        <p class="bodycopy">Essa separação é o que permite controlar entregas parciais sem perder a referência do pedido original.</p>
+
+        <div class="model-grid">
+          <div class="model-box primary">
+            <div class="model-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></div>
+            <h3>1. Pedido</h3>
+            <p>É o compromisso total. Já deve existir antes de o fornecedor agendar.</p>
+            <div class="model-list">
+              <div class="model-item"><span>Pedido</span><b>45872</b></div>
+              <div class="model-item"><span>Material</span><b>Açúcar refinado</b></div>
+              <div class="model-item"><span>Quantidade total</span><b>20.000 kg</b></div>
+            </div>
+          </div>
+
+          <div class="model-arrow">→</div>
+
+          <div class="model-box">
+            <div class="model-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg></div>
+            <h3>2. Agendamento</h3>
+            <p>É o que o fornecedor pretende entregar em uma data específica.</p>
+            <div class="model-list">
+              <div class="model-item"><span>Data / hora</span><b>12/08 · 09:00</b></div>
+              <div class="model-item"><span>Quantidade agendada</span><b>8.000 kg</b></div>
+              <div class="model-item"><span>Status</span><b>Confirmado</b></div>
+            </div>
+          </div>
+
+          <div class="model-arrow">→</div>
+
+          <div class="model-box">
+            <div class="model-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></div>
+            <h3>3. Recebimento</h3>
+            <p>É o que realmente chegou. Pode ser diferente da quantidade agendada.</p>
+            <div class="model-list">
+              <div class="model-item"><span>Quantidade recebida</span><b>7.500 kg</b></div>
+              <div class="model-item"><span>Divergência</span><b>-500 kg</b></div>
+              <div class="model-item"><span>Saldo do pedido</span><b>12.500 kg</b></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rule-strip">
+          <div><b>Pedido não some</b>Enquanto houver saldo, permanece disponível para novos agendamentos.</div>
+          <div><b>Mais de uma entrega</b>O mesmo pedido pode gerar vários agendamentos em dias diferentes.</div>
+          <div><b>Saldo calculado pelo recebido</b>O ideal é descontar o que realmente foi recebido, não apenas o que foi agendado.</div>
+        </div>
+
+        <div class="footnote"><span>Regra estrutural mais importante do sistema</span><span>Modelo de dados</span></div>
+        <span class="corner-count">02 / 10</span>
+      </section>
+
+      <!-- SLIDE 3 -->
+      <section class="slide">
+        <div class="kicker">Wireframe · Fornecedor</div>
+        <div class="title-row">
+          <div><h2>Buscar pedido</h2><p>O fornecedor entra com o número do pedido e o sistema recupera os dados já cadastrados.</p></div>
+          <span class="badge blue">Etapa 1</span>
+        </div>
+
+        <div class="browser">
+          <div class="browser-top"><span class="dot3"></span><span class="dot3"></span><span class="dot3"></span><div class="url">portal.empresa.com.br/fornecedor</div></div>
+          <div class="portal">
+            <aside class="sidebar">
+              <div class="side-brand">Portal</div>
+              <div class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>Buscar pedido</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/></svg>Minhas entregas</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg>Perfil</div>
+            </aside>
+
+            <div class="content">
+              <div class="content-head">
+                <div><h3>Encontre seu pedido</h3><p>Digite o número do pedido para consultar o saldo e agendar uma nova entrega.</p></div>
+                <span class="badge gray">Fornecedor: XPTO Alimentos</span>
+              </div>
+
+              <div class="search-row">
+                <div class="input">Digite o número do pedido…</div>
+                <button class="search-btn">Buscar</button>
+              </div>
+
+              <div class="table-card">
+                <table class="table">
+                  <thead><tr><th>Pedido</th><th>Cliente</th><th>Material</th><th>Quantidade total</th><th>Saldo</th><th>Status</th><th></th></tr></thead>
+                  <tbody>
+                    <tr class="selected">
+                      <td><b>45872</b></td><td>Beta Comércio</td><td>Açúcar refinado</td><td>20.000 kg</td><td><b>12.500 kg</b></td>
+                      <td><span class="badge amber">Parcial</span></td><td class="action">Abrir →</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="note" style="margin-top:14px">
+                Se o pedido não for encontrado, o fornecedor pode usar <b>“Não encontrei meu pedido”</b>. Isso abre uma solicitação interna de validação, em vez de criar um pedido novo sem controle.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footnote"><span>Recomendação: o fornecedor busca um pedido existente; ele não cadastra cliente, material ou pedido do zero.</span><span>Wireframe 1</span></div>
+        <span class="corner-count">03 / 10</span>
+      </section>
+
+      <!-- SLIDE 4 -->
+      <section class="slide">
+        <div class="kicker">Wireframe · Saldo do pedido</div>
+        <div class="title-row">
+          <div><h2>Detalhe do pedido</h2><p>Antes de agendar, o fornecedor enxerga o que já foi entregue, o que está agendado e o saldo restante.</p></div>
+          <span class="badge amber">Pedido parcial</span>
+        </div>
+
+        <div class="browser">
+          <div class="browser-top"><span class="dot3"></span><span class="dot3"></span><span class="dot3"></span><div class="url">portal.empresa.com.br/fornecedor/pedido/45872</div></div>
+          <div class="portal">
+            <aside class="sidebar">
+              <div class="side-brand">Portal</div>
+              <div class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h14v18H5z"/></svg>Pedido 45872</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/></svg>Minhas entregas</div>
+            </aside>
+
+            <div class="content">
+              <div class="order-top">
+                <div class="card">
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <h3>Pedido 45872</h3><span class="badge amber">Parcialmente entregue</span>
+                  </div>
+                  <div class="kv-grid">
+                    <div class="kv"><span>Fornecedor</span><b>XPTO Alimentos</b></div>
+                    <div class="kv"><span>Cliente</span><b>Beta Comércio</b></div>
+                    <div class="kv"><span>Material</span><b>Açúcar refinado</b></div>
+                  </div>
+
+                  <div class="progress-wrap">
+                    <div class="progress-label"><span>Progresso do pedido</span><b>37,5% recebido</b></div>
+                    <div class="progress"><span style="width:37.5%"></span></div>
+                  </div>
+
+                  <div class="summary3">
+                    <div><span>Total do pedido</span><b>20.000 kg</b></div>
+                    <div><span>Recebido</span><b style="color:var(--green)">7.500 kg</b></div>
+                    <div><span>Saldo</span><b style="color:var(--blue)">12.500 kg</b></div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <h3>Próxima ação</h3>
+                  <p style="font-size:11px;color:var(--muted);line-height:1.5;margin:8px 0 15px">Ainda há saldo disponível. O fornecedor pode criar outro agendamento para uma parte ou para todo o saldo restante.</p>
+                  <button class="primary-action">+ Agendar saldo restante</button>
+                  <div class="helper">O botão deixa de aparecer somente quando o saldo chegar a zero.</div>
+                </div>
+              </div>
+
+              <div class="card" style="margin-top:12px">
+                <h3>Entregas vinculadas ao pedido</h3>
+                <div class="history">
+                  <div class="history-line"><b>12/08 · 09:00</b><span>Agendado: 8.000 kg · Recebido: 7.500 kg</span><span><span class="badge green">Concluída</span></span></div>
+                  <div class="history-line"><b>15/08 · 14:00</b><span>Agendado: 5.000 kg</span><span><span class="badge blue">Confirmada</span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footnote"><span>O saldo precisa continuar visível mesmo quando já existem entregas concluídas ou futuras.</span><span>Wireframe 2</span></div>
+        <span class="corner-count">04 / 10</span>
+      </section>
+
+      <!-- SLIDE 5 -->
+      <section class="slide">
+        <div class="kicker">Wireframe · Novo agendamento</div>
+        <div class="title-row">
+          <div><h2>Agendar uma nova entrega</h2><p>O fornecedor informa apenas os dados variáveis daquela entrega. O restante vem do pedido.</p></div>
+          <span class="badge blue">Etapa 2</span>
+        </div>
+
+        <div class="browser">
+          <div class="browser-top"><span class="dot3"></span><span class="dot3"></span><span class="dot3"></span><div class="url">portal.empresa.com.br/fornecedor/pedido/45872/agendar</div></div>
+          <div class="portal">
+            <aside class="sidebar">
+              <div class="side-brand">Portal</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h14v18H5z"/></svg>Pedido 45872</div>
+              <div class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/></svg>Agendar entrega</div>
+            </aside>
+
+            <div class="content">
+              <div class="schedule-layout">
+                <div>
+                  <div class="card">
+                    <h3>Dados do pedido</h3>
+                    <div class="kv-grid" style="grid-template-columns:1fr 1fr">
+                      <div class="kv"><span>Fornecedor</span><b>XPTO Alimentos</b></div>
+                      <div class="kv"><span>Pedido</span><b>45872</b></div>
+                      <div class="kv"><span>Cliente</span><b>Beta Comércio</b></div>
+                      <div class="kv"><span>Material</span><b>Açúcar refinado</b></div>
+                    </div>
+                    <div class="summary3" style="grid-template-columns:1fr 1fr;margin-top:10px">
+                      <div><span>Saldo disponível</span><b style="color:var(--blue)">12.500 kg</b></div>
+                      <div><span>Já recebido</span><b style="color:var(--green)">7.500 kg</b></div>
+                    </div>
+                  </div>
+                  <div class="note" style="margin-top:10px"><b>Importante:</b> a quantidade deste agendamento não pode ultrapassar o saldo disponível do pedido.</div>
+                </div>
+
+                <div class="card">
+                  <h3 style="margin-bottom:10px">Dados da entrega</h3>
+                  <div class="row2">
+                    <div class="field"><label>Data</label><div class="input">18/08/2026 <span>▾</span></div></div>
+                    <div class="field"><label>Horário</label><div class="input">10:00 <span>▾</span></div></div>
+                  </div>
+
+                  <div class="field">
+                    <label>Quantidade desta entrega</label>
+                    <div class="unit-row">
+                      <div class="input">4.800</div>
+                      <div class="input">kg <span>▾</span></div>
+                    </div>
+                  </div>
+
+                  <div class="helper" style="margin-top:-4px;margin-bottom:9px">
+                    Unidade: <b>paletes</b> quando fizer sentido para a carga; <b>kg</b> quando for fracionado ou não completar um palete.
+                  </div>
+
+                  <label style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:#8c786f;font-weight:900">Horários disponíveis</label>
+                  <div class="slots"><div class="slot disabled">08:00</div><div class="slot">09:00</div><div class="slot selected">10:00</div><div class="slot">11:00</div></div>
+
+                  <div class="row2">
+                    <div class="field"><label>Motorista</label><div class="input">Carlos da Silva</div></div>
+                    <div class="field"><label>Placa</label><div class="input">ABC1D23</div></div>
+                  </div>
+
+                  <div class="field"><label>Transportadora</label><div class="input">Transportadora XPTO <span>▾</span></div></div>
+                  <button class="primary-action">Confirmar agendamento</button>
+                  <div class="helper">Após confirmar: salva o agendamento → envia e-mail → atualiza “Minhas entregas”.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footnote"><span>Campos mínimos: data · horário · fornecedor · pedido · cliente · material · quantidade · unidade (paletes ou kg)</span><span>Wireframe 3</span></div>
+        <span class="corner-count">05 / 10</span>
+      </section>
+
+      <!-- SLIDE 6 -->
+      <section class="slide">
+        <div class="kicker">Wireframe · Área de acompanhamento</div>
+        <div class="title-row">
+          <div><h2>Minhas entregas</h2><p>O fornecedor consulta próximas entregas, confirmações, status e histórico sem depender do e-mail.</p></div>
+          <span class="badge green">Acompanhamento</span>
+        </div>
+
+        <div class="browser">
+          <div class="browser-top"><span class="dot3"></span><span class="dot3"></span><span class="dot3"></span><div class="url">portal.empresa.com.br/fornecedor/entregas</div></div>
+          <div class="portal">
+            <aside class="sidebar">
+              <div class="side-brand">Portal</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>Buscar pedido</div>
+              <div class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/></svg>Minhas entregas</div>
+            </aside>
+
+            <div class="content">
+              <div class="metrics">
+                <div class="metric"><span>Agendadas</span><b style="color:var(--blue)">3</b></div>
+                <div class="metric"><span>Confirmadas</span><b style="color:var(--green)">2</b></div>
+                <div class="metric"><span>Em recebimento</span><b style="color:var(--amber)">1</b></div>
+                <div class="metric"><span>Concluídas</span><b>12</b></div>
+              </div>
+
+              <div class="track-layout">
+                <div class="table-card">
+                  <table class="table">
+                    <thead><tr><th>Pedido</th><th>Cliente</th><th>Material</th><th>Qtd.</th><th>Data / hora</th><th>Status</th><th></th></tr></thead>
+                    <tbody>
+                      <tr class="selected"><td><b>45872</b></td><td>Beta Comércio</td><td>Açúcar refinado</td><td>4.800 kg</td><td>18/08 · 10:00</td><td><span class="badge green">Confirmada</span></td><td class="action">Detalhes</td></tr>
+                      <tr><td><b>45872</b></td><td>Beta Comércio</td><td>Açúcar refinado</td><td>5.000 kg</td><td>15/08 · 14:00</td><td><span class="badge blue">Agendada</span></td><td class="action">Detalhes</td></tr>
+                      <tr><td><b>45190</b></td><td>Omega Ltda.</td><td>Farinha</td><td>3 paletes</td><td>10/08 · 09:00</td><td><span class="badge amber">Em recebimento</span></td><td class="action">Acompanhar</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div>
+                  <div class="card status-card">
+                    <h3>Pedido 45872 · 18/08 às 10:00</h3>
+                    <div class="status-bar"><span class="done"></span><span class="done"></span><span class="current"></span><span></span></div>
+                    <div class="event"><b>Agendamento confirmado</b><span>4.800 kg · 18/08/2026 às 10:00</span></div>
+                    <div class="event"><b>E-mail enviado</b><span>10/08/2026 · 16:42</span></div>
+                    <div class="event"><b>Próxima etapa</b><span>Aguardar chegada à unidade</span></div>
+                  </div>
+
+                  <div class="email-preview">
+                    <div class="head">E-mail de confirmação</div>
+                    <div class="body"><b>Agendamento confirmado</b><br>Pedido 45872 · 4.800 kg<br>18/08/2026 às 10:00<br><br><span style="color:var(--muted)">Consulte o portal para acompanhar o status.</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footnote"><span>O e-mail confirma. O portal acompanha.</span><span>Wireframe 4</span></div>
+        <span class="corner-count">06 / 10</span>
+      </section>
+
+      <!-- SLIDE 7 -->
+      <section class="slide">
+        <div class="kicker">Wireframe · Recebimento</div>
+        <div class="title-row">
+          <div><h2>O recebimento informa o que realmente chegou.</h2><p>Assim o saldo do pedido é atualizado corretamente, mesmo quando a entrega chega menor ou maior do que o previsto.</p></div>
+          <span class="badge amber">Operação interna</span>
+        </div>
+
+        <div class="browser">
+          <div class="browser-top"><span class="dot3"></span><span class="dot3"></span><span class="dot3"></span><div class="url">portal.empresa.com.br/recebimento</div></div>
+          <div class="portal">
+            <aside class="sidebar">
+              <div class="side-brand">Portal</div>
+              <div class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/></svg>Recebimentos</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/></svg>Agenda do dia</div>
+            </aside>
+
+            <div class="content">
+              <div class="order-top">
+                <div class="card">
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <h3>Entrega · Pedido 45872</h3><span class="badge amber">Em recebimento</span>
+                  </div>
+                  <div class="kv-grid">
+                    <div class="kv"><span>Data / horário</span><b>18/08 · 10:00</b></div>
+                    <div class="kv"><span>Fornecedor</span><b>XPTO Alimentos</b></div>
+                    <div class="kv"><span>Cliente</span><b>Beta Comércio</b></div>
+                    <div class="kv"><span>Material</span><b>Açúcar refinado</b></div>
+                    <div class="kv"><span>Unidade</span><b>kg</b></div>
+                    <div class="kv"><span>Placa</span><b>ABC1D23</b></div>
+                  </div>
+
+                  <div class="compare">
+                    <div class="compare-box"><span>Quantidade agendada</span><b>4.800 kg</b></div>
+                    <div class="compare-box"><span>Quantidade recebida</span><b style="color:var(--green)">4.500 kg</b></div>
+                  </div>
+                  <div class="delta">Divergência: <b>-300 kg</b>. O saldo do pedido será atualizado com base no recebido.</div>
+                </div>
+
+                <div class="card">
+                  <h3>Finalizar recebimento</h3>
+                  <div class="field" style="margin-top:11px"><label>Quantidade recebida</label><div class="unit-row"><div class="input">4.500</div><div class="input">kg <span>▾</span></div></div></div>
+                  <div class="field"><label>Observação</label><div class="input" style="height:60px;align-items:flex-start;padding-top:9px">Diferença de 300 kg informada na conferência.</div></div>
+                  <div class="status-actions">
+                    <div>Concluída</div>
+                    <div class="active">Parcial</div>
+                    <div>Recusada</div>
+                  </div>
+                  <button class="primary-action" style="margin-top:10px">Salvar recebimento</button>
+                  <div class="helper">Após salvar, o saldo do pedido é recalculado automaticamente.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footnote"><span>Quantidade agendada ≠ quantidade recebida. O sistema deve guardar as duas.</span><span>Wireframe 5</span></div>
+        <span class="corner-count">07 / 10</span>
+      </section>
+
+      <!-- SLIDE 8 -->
+      <section class="slide">
+        <div class="kicker">Estrutura final recomendada</div>
+        <h2>Como eu fecharia o MVP</h2>
+        <p class="bodycopy">O objetivo é permitir autoagendamento sem perder controle operacional, histórico ou saldo de pedidos fracionados.</p>
+
+        <div class="arch-grid">
+          <div class="stack">
+            <div class="stack-box primary"><div><b>1. Pedidos já cadastrados</b><br><span>Importados, integrados ou cadastrados internamente.</span></div><span class="badge blue">Base</span></div>
+            <div class="arrow-down">↓</div>
+            <div class="stack-box"><div><b>2. Portal do fornecedor</b><br><span>Busca pedido → vê saldo → agenda entrega.</span></div><span class="badge green">Autoatendimento</span></div>
+            <div class="arrow-down">↓</div>
+            <div class="stack-box"><div><b>3. Confirmação + acompanhamento</b><br><span>E-mail automático e área “Minhas entregas”.</span></div><span class="badge blue">Visibilidade</span></div>
+            <div class="arrow-down">↓</div>
+            <div class="stack-box"><div><b>4. Recebimento</b><br><span>Registra quantidade real e encerra/parcializa a entrega.</span></div><span class="badge amber">Operação</span></div>
+            <div class="arrow-down">↓</div>
+            <div class="stack-box"><div><b>5. Saldo atualizado</b><br><span>Pedido permanece aberto até chegar a zero.</span></div><span class="badge gray">Controle</span></div>
+          </div>
+
+          <div class="rules">
+            <div class="rule"><div class="num">01</div><div><b>Campos mínimos do agendamento</b><p>Data, horário, fornecedor, pedido, cliente, material, quantidade e unidade (paletes ou kg).</p></div></div>
+            <div class="rule"><div class="num">02</div><div><b>Pedido é a referência</b><p>Fornecedor, cliente e material devem vir do pedido para evitar redigitação e erro.</p></div></div>
+            <div class="rule"><div class="num">03</div><div><b>Entrega fracionada</b><p>Um pedido pode gerar várias entregas em datas diferentes.</p></div></div>
+            <div class="rule"><div class="num">04</div><div><b>Saldo pelo recebido</b><p>O sistema compara agendado x recebido e mantém o restante pendente.</p></div></div>
+            <div class="rule"><div class="num">05</div><div><b>Pedido não encontrado</b><p>Abre solicitação de validação interna; não cria pedido livremente.</p></div></div>
+            <div class="rule"><div class="num">06</div><div><b>Planilha</b><p>Pode existir na transição como apoio/exportação, mas o portal deve ser a fonte oficial.</p></div></div>
+          </div>
+        </div>
+
+        <div class="footnote"><span>MVP: pedidos + busca + saldo + agendamento + confirmação + acompanhamento + recebimento</span><span>Recomendação</span></div>
+        <span class="corner-count">08 / 10</span>
+      </section>
+
+
+      <!-- SLIDE 9 -->
+      <section class="slide">
+        <div class="kicker">Wireframe · Administração</div>
+        <div class="title-row">
+          <div>
+            <h2>Controle dos agendamentos</h2>
+            <p>A administração acompanha tudo o que foi marcado pelos fornecedores, identifica pendências e consegue agir quando houver exceções.</p>
+          </div>
+          <span class="badge blue">Visão administrativa</span>
+        </div>
+
+        <div class="browser">
+          <div class="browser-top"><span class="dot3"></span><span class="dot3"></span><span class="dot3"></span><div class="url">portal.empresa.com.br/administracao/agenda</div></div>
+          <div class="portal">
+            <aside class="sidebar">
+              <div class="side-brand">LIPSON</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/></svg>Painel</div>
+              <div class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg>Agendamentos</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h14v18H5z"/></svg>Pedidos</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/></svg>Recebimentos</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M9 19V9M14 19V12M19 19V7"/></svg>Relatórios</div>
+            </aside>
+
+            <div class="content">
+              <div class="admin-stats">
+                <div class="admin-stat"><span>Agendados hoje</span><b>14</b></div>
+                <div class="admin-stat"><span>Aguardando fornecedor</span><b style="color:var(--amber)">6</b></div>
+                <div class="admin-stat"><span>Em recebimento</span><b style="color:var(--blue)">3</b></div>
+                <div class="admin-stat"><span>Pedidos parciais</span><b>11</b></div>
+              </div>
+
+              <div class="filterbar">
+                <div class="filter-chip active">Hoje · 18/08/2026</div>
+                <div class="filter-chip">Todos os horários</div>
+                <div class="filter-chip">Todos os fornecedores</div>
+                <div class="filter-chip">Todos os status</div>
+                <div class="filter-chip">Buscar pedido…</div>
+              </div>
+
+              <div class="admin-table-wrap">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Hora</th><th>Fornecedor</th><th>Pedido</th><th>Cliente</th><th>Material</th>
+                      <th>Qtd. agendada</th><th>Saldo pedido</th><th>Status</th><th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="today">
+                      <td><b>08:00</b></td><td>Fornecedor Alfa</td><td>45831</td><td>Cliente A</td><td>Base cremosa</td>
+                      <td>6 paletes</td><td>0</td><td><span class="badge green">Concluída</span></td>
+                      <td><div class="row-actions"><button class="tiny-action">Detalhes</button></div></td>
+                    </tr>
+                    <tr>
+                      <td><b>09:00</b></td><td>XPTO Alimentos</td><td>45872</td><td>Beta Comércio</td><td>Açúcar refinado</td>
+                      <td>4.800 kg</td><td>7.700 kg</td><td><span class="badge blue">Confirmada</span></td>
+                      <td><div class="row-actions"><button class="tiny-action main">Abrir</button><button class="tiny-action">Reagendar</button></div></td>
+                    </tr>
+                    <tr class="attention">
+                      <td><b>10:00</b></td><td>Fornecedor Ômega</td><td>45902</td><td>Cliente B</td><td>Frasco 250 ml</td>
+                      <td>10 paletes</td><td>4 paletes</td><td><span class="badge amber">Parcial</span></td>
+                      <td><div class="row-actions"><button class="tiny-action main">Abrir</button><button class="tiny-action">Contato</button></div></td>
+                    </tr>
+                    <tr>
+                      <td><b>11:00</b></td><td>Fornecedor Delta</td><td>45910</td><td>Cliente C</td><td>Essência floral</td>
+                      <td>1.250 kg</td><td>1.250 kg</td><td><span class="badge gray">Aguardando</span></td>
+                      <td><div class="row-actions"><button class="tiny-action main">Abrir</button></div></td>
+                    </tr>
+                    <tr>
+                      <td><b>14:00</b></td><td>Fornecedor Gama</td><td>45918</td><td>Cliente D</td><td>Cartucho impresso</td>
+                      <td>8 paletes</td><td>12 paletes</td><td><span class="badge blue">Confirmada</span></td>
+                      <td><div class="row-actions"><button class="tiny-action main">Abrir</button></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="alert-panel">
+                <div class="alert-card">
+                  <div class="alert-mark">!</div>
+                  <div><b>6 pedidos aguardando agendamento</b><p>Fornecedores ainda não escolheram data e horário. A administração pode reenviar lembrete ou entrar em contato.</p></div>
+                </div>
+                <div class="alert-card">
+                  <div class="alert-mark">↻</div>
+                  <div><b>3 pedidos com saldo e nenhuma próxima entrega</b><p>Ajuda a identificar pedidos fracionados que ainda precisam de um novo agendamento.</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footnote"><span>A administração observa, filtra, trata exceções e acompanha pedidos que ainda possuem saldo.</span><span>Wireframe 6</span></div>
+        <span class="corner-count">09 / 10</span>
+      </section>
+
+      <!-- SLIDE 10 -->
+      <section class="slide">
+        <div class="kicker">Wireframe · Recepção / Recebimento</div>
+        <div class="title-row">
+          <div>
+            <h2>Agenda do dia em formato de planilha</h2>
+            <p>Para a recepção, o mais importante é localizar rapidamente a entrega, registrar chegada e preencher o que realmente foi recebido.</p>
+          </div>
+          <span class="badge amber">Operação do dia</span>
+        </div>
+
+        <div class="browser">
+          <div class="browser-top"><span class="dot3"></span><span class="dot3"></span><span class="dot3"></span><div class="url">portal.empresa.com.br/recepcao/agenda-do-dia</div></div>
+          <div class="portal">
+            <aside class="sidebar">
+              <div class="side-brand">LIPSON</div>
+              <div class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg>Agenda do dia</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/></svg>Em recebimento</div>
+              <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/></svg>Concluídos</div>
+            </aside>
+
+            <div class="content">
+              <div class="sheet-toolbar">
+                <div class="sheet-title">
+                  <strong>Segunda-feira · 18/08/2026</strong>
+                  <span>14 entregas programadas</span>
+                </div>
+                <div class="sheet-actions">
+                  <button class="sheet-btn">◀ Dia anterior</button>
+                  <button class="sheet-btn">Hoje</button>
+                  <button class="sheet-btn">Próximo dia ▶</button>
+                  <button class="sheet-btn">Filtrar</button>
+                </div>
+              </div>
+
+              <div class="sheet-wrap">
+                <table class="sheet">
+                  <thead>
+                    <tr>
+                      <th>✓</th><th>Horário</th><th>Chegada</th><th>Fornecedor</th><th>Pedido</th><th>Cliente</th>
+                      <th>Material</th><th>Qtd. agendada</th><th>Un.</th><th>Qtd. recebida</th><th>Status</th><th>Ação</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="checkbox checked">✓</span></td><td><b>08:00</b></td><td>07:52</td><td>Fornecedor Alfa</td><td>45831</td><td>Cliente A</td>
+                      <td>Base cremosa</td><td>6</td><td>paletes</td><td><span class="cell-input">6</span></td><td><span class="badge green">Concluída</span></td><td><button class="tiny-action">Ver</button></td>
+                    </tr>
+                    <tr class="focus">
+                      <td><span class="checkbox checked">✓</span></td><td><b>09:00</b></td><td>09:08</td><td>XPTO Alimentos</td><td>45872</td><td>Beta Comércio</td>
+                      <td>Açúcar refinado</td><td>4.800</td><td>kg</td><td><span class="cell-input">4.500</span></td><td><span class="badge amber">Parcial</span></td><td><button class="tiny-action main">Finalizar</button></td>
+                    </tr>
+                    <tr>
+                      <td><span class="checkbox"></span></td><td><b>10:00</b></td><td>—</td><td>Fornecedor Ômega</td><td>45902</td><td>Cliente B</td>
+                      <td>Frasco 250 ml</td><td>10</td><td>paletes</td><td><span class="cell-input empty">preencher</span></td><td><span class="badge blue">Confirmada</span></td><td><button class="tiny-action main">Registrar chegada</button></td>
+                    </tr>
+                    <tr>
+                      <td><span class="checkbox"></span></td><td><b>11:00</b></td><td>—</td><td>Fornecedor Delta</td><td>45910</td><td>Cliente C</td>
+                      <td>Essência floral</td><td>1.250</td><td>kg</td><td><span class="cell-input empty">preencher</span></td><td><span class="badge gray">Aguardando</span></td><td><button class="tiny-action">Aguardar</button></td>
+                    </tr>
+                    <tr>
+                      <td><span class="checkbox"></span></td><td><b>14:00</b></td><td>—</td><td>Fornecedor Gama</td><td>45918</td><td>Cliente D</td>
+                      <td>Cartucho impresso</td><td>8</td><td>paletes</td><td><span class="cell-input empty">preencher</span></td><td><span class="badge blue">Confirmada</span></td><td><button class="tiny-action main">Registrar chegada</button></td>
+                    </tr>
+                    <tr>
+                      <td><span class="checkbox"></span></td><td><b>15:00</b></td><td>—</td><td>Fornecedor Sigma</td><td>45920</td><td>Cliente E</td>
+                      <td>Tampa plástica</td><td>5</td><td>paletes</td><td><span class="cell-input empty">preencher</span></td><td><span class="badge blue">Confirmada</span></td><td><button class="tiny-action main">Registrar chegada</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="sheet-note">
+                <div><b>Bater o olho primeiro no horário e fornecedor</b>A tela prioriza as informações usadas para localizar o veículo rapidamente.</div>
+                <div><b>Quantidade recebida é editável</b>A recepção registra o realizado e o sistema recalcula o saldo do pedido.</div>
+                <div><b>Cores apenas para status</b>O restante fica neutro para manter aparência de planilha e facilitar leitura.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footnote"><span>Formato “planilha” reduz curva de aprendizado para quem já trabalha hoje com Excel.</span><span>Wireframe 7</span></div>
+        <span class="corner-count">10 / 10</span>
+      </section>
+
+      <div class="nav-dots" id="dots"></div>
+    </div>
+
+    <div class="floating-nav">
+      <button class="circle-btn" onclick="prev()" title="Anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button class="circle-btn" onclick="next()" title="Próximo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </main>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dots=document.getElementById('dots');
+let current=0;
+
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='nav-dot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dots.appendChild(d);
+});
+
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active',i===current));
+  [...dots.children].forEach((d,i)=>d.classList.toggle('active',i===current));
+}
+function goTo(i){current=Math.max(0,Math.min(slides.length-1,i));render()}
+function next(){goTo((current+1)%slides.length)}
+function prev(){goTo((current-1+slides.length)%slides.length)}
+
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' '].includes(e.key)) next();
+  if(['ArrowLeft','PageUp'].includes(e.key)) prev();
+  if(e.key==='Home') goTo(0);
+  if(e.key==='End') goTo(slides.length-1);
+});
+</script>
+</body>
+</html>
